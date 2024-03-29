@@ -1,4 +1,4 @@
-package config.security.authorization.response
+package dto
 
 interface OAuth2Response {
     //제공자 (Ex. naver, google, ...)

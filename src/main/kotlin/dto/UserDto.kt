@@ -1,4 +1,4 @@
-package config.security.authorization.dto
+package dto
 
 data class UserDto(
     var role:String,

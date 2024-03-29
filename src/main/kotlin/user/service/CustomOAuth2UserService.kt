@@ -1,9 +1,9 @@
 package user.service
 
-import config.security.authorization.dto.UserDto
+import dto.UserDto
 import config.security.authorization.model.CustomOAuth2User
-import config.security.authorization.response.NaverResponse
-import config.security.authorization.response.OAuth2Response
+import dto.NaverResponse
+import dto.OAuth2Response
 import entity.User
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -21,7 +21,7 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
         println(oAuth2User)
 
         val registrationId = userRequest?.clientRegistration?.registrationId
-        val oAuth2Response:OAuth2Response by lazy {
+        val oAuth2Response: OAuth2Response by lazy {
             NaverResponse(oAuth2User.attributes)
         }
         val userName = oAuth2Response.provider + " " + oAuth2Response.providerId
@@ -41,7 +41,7 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
 
             userRepository.save(existData)
 
-            val userDto:UserDto = UserDto(existData.userName, oAuth2Response.name!!, existData.role)
+            val userDto: UserDto = UserDto(existData.userName, oAuth2Response.name!!, existData.role)
             return CustomOAuth2User(userDto)
         }
     }

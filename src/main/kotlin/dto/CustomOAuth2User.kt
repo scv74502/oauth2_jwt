@@ -1,20 +1,18 @@
-package config.security.authorization.model
+package dto
 
-import config.security.authorization.dto.UserDto
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
 
-
-class CustomOAuth2User(userDto: UserDto):OAuth2User {
-    private val userDto:UserDto = userDto
-
+class CustomOAuth2User(
+    private val userDto:UserDto
+): OAuth2User {
     override fun getAttributes(): MutableMap<String, Any>? {
         return null
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        val collection:MutableCollection<GrantedAuthority> = ArrayList()
-        collection.add(GrantedAuthority() {
+        val collection: MutableCollection<GrantedAuthority> = ArrayList()
+        collection.add(GrantedAuthority {
             userDto.role
         })
         return collection
@@ -24,10 +22,9 @@ class CustomOAuth2User(userDto: UserDto):OAuth2User {
         return userDto.name
     }
 
-    fun getUserName(): String {
-        return userDto.userName
+    fun getUsername(): String {
+        return userDto.name
     }
-
 }
 
 //class CustomOAuth2User(userDTO: UserDTO) : OAuth2User {
@@ -38,7 +35,7 @@ class CustomOAuth2User(userDto: UserDto):OAuth2User {
 //    }
 //
 //    override fun getAuthorities(): Collection<GrantedAuthority> {
-//        val collection: MutableCollection<GrantedAuthority> = ArrayList()
+//        val collection: MutableCollection<GrantedAuthority> = java.util.ArrayList()
 //
 //        collection.add(GrantedAuthority { userDTO.getRole() })
 //

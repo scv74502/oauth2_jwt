@@ -1,4 +1,4 @@
-package config.security.authorization.response
+package dto
 
 
 
