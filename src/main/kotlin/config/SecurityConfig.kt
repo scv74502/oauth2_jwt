@@ -1,5 +1,6 @@
 package config
 
+import jwt.JWTFilter
 import jwt.JWTUtil
 import oauth2.CustomSuccessHandler
 import org.springframework.context.annotation.Bean
@@ -38,6 +39,10 @@ class SecurityConfig(
         // http basic authentication disable
         http
             .httpBasic{ auth -> auth.disable() }
+
+        // add JWTFilter
+        http
+            .addFilterBefore(JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
 
         //oauth2
         http
