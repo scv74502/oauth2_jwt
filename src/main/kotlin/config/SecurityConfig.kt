@@ -1,22 +1,16 @@
 package config
 
-import jwt.JWTFilter
 import jwt.JWTUtil
 import oauth2.CustomSuccessHandler
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configurers.*
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.UserInfoEndpointConfig
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import user.service.CustomOAuth2UserService
+import java.util.*
 
 
 //@Configuration
@@ -26,34 +20,67 @@ class SecurityConfig(
     private val customSuccessHandler: CustomSuccessHandler,
     private val jwtUtil: JWTUtil
 ) {
+//    @Bean
+//    @Throws(Exception::class)
+//    fun filterChaijn(http:HttpSecurity):SecurityFilterChain {
+//        http
+//            .cors{
+//                corsCustomizer -> corsCustomizer.configurationSource { CorsConfigurationSource() }
+//    }
+
     @Bean
-    fun filterChain(http:HttpSecurity):SecurityFilterChain{
-        // csrf disable
+    @Throws(Exception::class)
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf{auth -> auth.disable()}
+            .cors { corsCustomizer: CorsConfigurer<HttpSecurity?> ->
+                corsCustomizer.configurationSource {
+                    val configuration = CorsConfiguration()
+                    configuration.allowedOrigins = Collections.singletonList("http://localhost:3000")
+                    configuration.allowedMethods = Collections.singletonList("*")
+                    configuration.allowCredentials = true
+                    configuration.allowedHeaders = Collections.singletonList("*")
+                    configuration.maxAge = 3600L
 
-        // form login disable
-        http
-            .formLogin { auth -> auth.disable() }
+                    configuration.exposedHeaders = Collections.singletonList("Set-Cookie")
+                    configuration.exposedHeaders = Collections.singletonList("Authorization")
 
-        // http basic authentication disable
-        http
-            .httpBasic{ auth -> auth.disable() }
-
-        // add JWTFilter
-        http
-            .addFilterBefore(JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
-
-        //oauth2
-        http
-            .oauth2Login { oauth2 ->
-                oauth2
-                    .userInfoEndpoint{ userInfoEndpointConfig ->
-                        userInfoEndpointConfig
-                            .userService(customOAuth2UserService)
-                    }
-                    .successHandler(customSuccessHandler)
+                    return@configurationSource configuration
+                }
             }
+
+        return http.build()
+    }
+}
+
+//    @Bean
+//    @Throws(Exception::class)
+//    fun filterChain(http:HttpSecurity):SecurityFilterChain{
+//        // csrf disable
+//        http
+//            .csrf{auth -> auth.disable()}
+//
+//        // form login disable
+//        http
+//            .formLogin { auth -> auth.disable() }
+//
+//        // http basic authentication disable
+//        http
+//            .httpBasic{ auth -> auth.disable() }
+//
+//        // add JWTFilter
+//        http
+//            .addFilterBefore(JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
+//
+//        //oauth2
+//        http
+//            .oauth2Login { oauth2 ->
+//                oauth2
+//                    .userInfoEndpoint{ userInfoEndpointConfig ->
+//                        userInfoEndpointConfig
+//                            .userService(customOAuth2UserService)
+//                    }
+//                    .successHandler(customSuccessHandler)
+//            }
 
 //        http
 //            .oauth2Login { oauth2 ->
@@ -64,23 +91,22 @@ class SecurityConfig(
 //                    }
 //                    .successHandler(customSuccessHandler)
 //            }
-
-        // authorize per path
-        http
-            .authorizeHttpRequests{ auth -> auth
-                .requestMatchers("/").permitAll()
-                .anyRequest().authenticated()
-            }
-
-        // session settings : stateless
-        http
-            .sessionManagement { session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            }
-
-        return http.build()
-    }
-}
+//        // authorize per path
+//        http
+//            .authorizeHttpRequests{ auth -> auth
+//                .requestMatchers("/").permitAll()
+//                .anyRequest().authenticated()
+//            }
+//
+//        // session settings : stateless
+//        http
+//            .sessionManagement { session -> session
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//            }
+//
+//        return http.build()
+//    }
+//}
 
 //@Configuration
 //@EnableWebSecurity

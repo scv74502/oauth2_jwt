@@ -1,7 +1,7 @@
 package user.service
 
+import dto.CustomOAuth2User
 import dto.UserDto
-import config.security.authorization.model.CustomOAuth2User
 import dto.NaverResponse
 import dto.OAuth2Response
 import entity.User
